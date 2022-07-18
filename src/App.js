@@ -30,7 +30,7 @@ function App() {
       <SideNavigation />
 
       <div className="main-content">
-        <UserList users={users} />
+        <UserList users={[]} />
       </div>
     </div>
   );
