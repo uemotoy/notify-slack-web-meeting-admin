@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { API_URL } from "./constants";
 
-function UserList({ users }) {
-  // const [_users, setUsers] = useState([]);
+function UserList() {
+  const [users, setUsers] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   /**
@@ -13,7 +13,8 @@ function UserList({ users }) {
     try {
       setIsLoading(true);
       const response = await fetch(url, { mode: "cors" });
-      console.log(response);
+      const data = await response.json();
+      setUsers(data);
     } catch (e) {
       console.error(e);
     } finally {
@@ -50,7 +51,7 @@ function UserList({ users }) {
         {users.map((user) => (
           <React.Fragment key={user.id}>
             <div className="user-list-grid-item">{user.name}</div>
-            <div className="user-list-grid-item">"@@@@@"</div>
+            <div className="user-list-grid-item">{user.emailAddress}</div>
           </React.Fragment>
         ))}
       </div>
