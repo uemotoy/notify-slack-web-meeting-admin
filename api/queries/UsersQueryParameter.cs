@@ -35,11 +35,6 @@ namespace NotifySlackWebMeetingsAdmin.Api.Queries
     public string EmailAddress { get; set; }
 
     /// <summary>
-    /// ユーザープリンシパル名
-    /// </summary>
-    public string UserPrincipal { get; set; }
-
-    /// <summary>
     /// ID一覧が指定されているか
     /// </summary>
     public bool HasIds
@@ -69,17 +64,6 @@ namespace NotifySlackWebMeetingsAdmin.Api.Queries
       }
     }
 
-    /// <summary>
-    /// ユーザープリンシパル名が指定されているか
-    /// </summary>
-    public bool HasUserPrincipal
-    {
-      get
-      {
-        return !string.IsNullOrEmpty(UserPrincipal);
-      }
-    }
-
     #endregion
 
     #region 公開サービス
@@ -104,10 +88,6 @@ namespace NotifySlackWebMeetingsAdmin.Api.Queries
       if (this.HasEmailAddress)
       {
         expr = expr.And(s => s.EmailAddress.Contains(this.EmailAddress));
-      }
-      if (this.HasUserPrincipal)
-      {
-        expr = expr.And(s => s.UserPrincipal == this.UserPrincipal);
       }
       if (expr == original)
       {

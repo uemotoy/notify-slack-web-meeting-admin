@@ -46,7 +46,6 @@ namespace NotifySlackWebMeetingAdmin.Api
           Ids = req.Query["ids"],
           Name = req.Query["name"],
           EmailAddress = req.Query["emailAddress"],
-          UserPrincipal = req.Query["userPrincipal"],
         };
 
         // Slackチャンネル情報を取得
