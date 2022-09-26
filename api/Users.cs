@@ -11,6 +11,8 @@ using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Documents.Linq;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using FluentValidation;
 
 using NotifySlackWebMeetingsAdmin.Api.Entities;
 using NotifySlackWebMeetingsAdmin.Api.Queries;
@@ -19,12 +21,15 @@ namespace NotifySlackWebMeetingAdmin.Api
 {
   public static class Users
   {
+
+
+    #region ユーザーを取得する
     [FunctionName("GetUsers")]
     public static async Task<IActionResult> GetUsers(
         [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "Users")] HttpRequest req,
         [CosmosDB(
           databaseName: "notify-slack-web-meeting-db",
-          collectionName: "WebMeetings",
+          collectionName: "Users",
           ConnectionStringSetting = "CosmosDBConnectionString")]DocumentClient client,
         ILogger log)
     {
@@ -79,5 +84,74 @@ namespace NotifySlackWebMeetingAdmin.Api
 
       return documentItems;
     }
+    #endregion
+
+    #region ユーザーを追加する
+    /// <summary>
+    /// ユーザーを追加する。
+    /// </summary>
+    /// <returns>追加したユーザー情報</returns>        
+    [FunctionName("AddUsers")]
+    public static async Task<IActionResult> AddUsers(
+        [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "Users")] HttpRequest req,
+        [CosmosDB(
+                databaseName: "notify-slack-web-meeting-db",
+                collectionName: "Users",
+                ConnectionStringSetting = "CosmosDbConnectionString")]IAsyncCollector<dynamic> documentsOut,
+        ILogger log)
+    {
+      log.LogInformation("C# HTTP trigger function processed a request.");
+      string message = string.Empty;
+
+      try
+      {
+        log.LogInformation("POST Users");
+
+        // リクエストのBODYからパラメータ取得
+        string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
+        dynamic data = JsonConvert.DeserializeObject(requestBody);
+
+        // エンティティに設定
+        User user = new User()
+        {
+          Name = data?.name,
+          EmailAddress = data?.emailAddress,
+        };
+
+        // 入力値チェックを行う
+        UserValidator validator = new UserValidator();
+        validator.ValidateAndThrow(user);
+
+        // Slackチャンネル情報を登録
+        message = await AddUsers(documentsOut, user);
+      }
+      catch (Exception ex)
+      {
+        return new BadRequestObjectResult(ex);
+      }
+
+      return new OkObjectResult(message);
+    }
+
+    /// <summary>
+    /// ユーザー情報を登録する。
+    /// </summary>
+    /// <param name="documentsOut">CosmosDBのドキュメント</param>
+    /// <param name="user">ユーザー情報</param>
+    /// <returns></returns>
+    private static async Task<string> AddUsers(
+                IAsyncCollector<dynamic> documentsOut,
+                User user
+                )
+    {
+      // 登録日時にUTCでの現在日時を設定
+      user.RegisteredAt = DateTime.UtcNow;
+      // Add a JSON document to the output container.
+      string documentItem = JsonConvert.SerializeObject(user, new JsonSerializerSettings { ContractResolver = new CamelCasePropertyNamesContractResolver() });
+      await documentsOut.AddAsync(documentItem);
+      return documentItem;
+    }
+    #endregion
+
   }
 }
