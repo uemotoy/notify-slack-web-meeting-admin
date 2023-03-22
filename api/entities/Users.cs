@@ -14,6 +14,7 @@ namespace NotifySlackWebMeetingsAdmin.Api.Entities
     public User()
     {
       Id = Guid.NewGuid().ToString();
+      AuthorizationKey = Guid.NewGuid().ToString();
     }
 
     #region プロパティ
@@ -37,6 +38,11 @@ namespace NotifySlackWebMeetingsAdmin.Api.Entities
     /// </summary>
     [JsonProperty("registeredAt")]
     public DateTime RegisteredAt { get; set; }
+    /// <summary>
+    /// 認可トークン
+    /// </summary>   
+    [JsonProperty("authorizationKey")]
+    public string AuthorizationKey { get; set; }
 
     #endregion
   }

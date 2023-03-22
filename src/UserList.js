@@ -16,7 +16,11 @@ function UserList() {
       setIsLoading(true);
       const response = await fetch(url, { mode: "cors" });
       const data = await response.json();
-      setUsers(data);
+      if (response.status === 200) {
+        setUsers(data);
+      } else {
+        alert("ユーザーの取得に失敗しました");
+      }
     } catch (e) {
       console.error(e);
     } finally {
@@ -103,6 +107,7 @@ function UserList() {
         </div>
         <div className="user-list-grid-item">ユーザー名</div>
         <div className="user-list-grid-item">メールアドレス</div>
+        <div className="user-list-grid-item">認可トークン</div>
       </div>
       <div className="user-list-grid">
         {isLoading && (
@@ -126,6 +131,7 @@ function UserList() {
               </div>
               <div className="user-list-grid-item">{user.name}</div>
               <div className="user-list-grid-item">{user.emailAddress}</div>
+              <div className="user-list-grid-item">{user.authorizationKey}</div>
             </React.Fragment>
           ))}
         </div>
