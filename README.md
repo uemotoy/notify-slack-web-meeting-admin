@@ -68,7 +68,7 @@ https://learn.microsoft.com/ja-jp/azure/static-web-apps/add-api?tabs=react
 拡張機能で Azure Static Web Apps を作成する。
 
 1. 名前には管理アプリケーション名を指定します。
-2. リージョンは「Japan East」を指定します。
+2. リージョンは「East Asia」を指定します。
 3. ビルド設定は「React」を指定します。
 
 その他のパラメータは以下の通りです。
